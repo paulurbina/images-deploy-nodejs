@@ -1,0 +1,29 @@
+<%- include("partials/head") %>
+
+
+<div class="container p-4">
+    <div class="row">
+        <div class="card-columns">
+            <% images.forEach(function(images) { %>
+            <div class="card animated fadeInDown  border border-light">
+                    <img src="<%= images.path %>" class="card-img-top" alt="">
+                <div class="card-body">
+                    <h5 class="card-body">
+                        <%= images.title %>
+                    </h5>
+                    <p class="card-text">
+                        <%= images.description %>
+                    </p>
+                    <p class="card-text">
+                        <%= format(images.create_at) %>
+                    </p>
+                    <a href="/image/<%= images.id%>" class="btn btn-primary">
+                    View Profile</a>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+</div>
+
+<%- include("partials/footer") %>

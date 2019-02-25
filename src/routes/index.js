@@ -4,6 +4,7 @@ const { unlink } = require('fs-extra');
 
 const Image = require('../models/image');
 const cloudinary = require('cloudinary');
+
 //CONFIG CLOUDINARY
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

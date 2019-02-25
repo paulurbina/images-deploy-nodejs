@@ -8,6 +8,7 @@ const imageSchema = new Schema({
     originalname: { type: String },
     mimetype: { type: String },
     size: { type: Number },
+    public_id: { type: String },
     create_at: { type: Date, default: Date.now() }
 });
 

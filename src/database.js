@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/pinterest', {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true
 })
-    .then(db => console.log('DB is connected'))
+    .then(db => console.log('MONGODB ATLAS is connected'))
     .catch(err => console.error(err));

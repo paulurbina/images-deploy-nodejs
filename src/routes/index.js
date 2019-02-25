@@ -1,9 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { unlink } = require('fs-extra');
-const path = require('path');
 
 const Image = require('../models/image');
+const cloudinary = require('cloudinary');
+//CONFIG CLOUDINARY
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 /**
  * 
@@ -18,11 +24,6 @@ router.get('/', async (req, res) => {
 
 /**
  * 
- * /-----------------------------
- */
-
-/**
- * 
  * 
  * UPLOAD IMAGE
  */
@@ -32,24 +33,23 @@ router.get('/upload', (req, res) => {
 });
 
 router.post('/upload', async (req, res) => {
-    const image = new Image();
-    image.title = req.body.title;
-    image.description = req.body.description;
-    image.filename = req.file.filename;
-    image.path = '/img/uploads/' + req.file.filename;
-    image.originalname = req.file.originalname;
-    image.mimetype = req.file.originalname;
-    image.size = req.file.size;
 
-    await image.save();
-
+    const { title, description } = req.body;
+    const result = await cloudinary.v2.uploader.upload(req.file.path);
+    // console.log(result);
+    const newImage = new Image({
+        title,
+        description,
+        originalname:req.file.originalname,
+        mimetype: result.type,
+        path: result.url,
+        size:result.bytes,
+        public_id: result.public_id
+    });
+    await newImage.save();
+    await unlink(req.file.path);
     res.redirect('/');
 });
-
-/**
- * -----------------------------
- */
-
  /**
   * 
   * 
@@ -62,8 +62,6 @@ router.get('/image/:id', async (req, res) => {
     console.log(image);
     res.render('profile', { image });
 });
-
-
 /**
  * 
  * 
@@ -72,7 +70,8 @@ router.get('/image/:id', async (req, res) => {
 router.get('/image/:id/delete', async (req, res) => {
     const { id } = req.params;
     const image =  await Image.findByIdAndDelete(id);
-    await unlink(path.resolve('./src/public' + image.path));
+    await cloudinary.v2.uploader.destroy(image.public_id);
+    // await unlink(path.resolve('./src/public' + image.path));
     res.redirect('/');
 });
 
